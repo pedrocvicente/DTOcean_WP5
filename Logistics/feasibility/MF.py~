@@ -1,0 +1,102 @@
+# -*- coding: utf-8 -*-
+"""
+@author: WavEC Offshore Renewables
+email: boris.teillant@wavec.org; paulo@wavec.org
+
+This module is part of the characterization step in the WP5 methodology. It 
+contains feasibility functions to compute the minimum logistic requirements to 
+carry out the different logistic phases. This particular modules includes the
+function related to the installation of moorings and foundations.
+
+BETA VERSION NOTES: The current version is limited to an installation strategy
+consisting of installation of 1 set of foundations at the time. This will be 
+futher developed in the beta version due to October.
+"""
+
+def MF_feas(log_phase, log_phase_id, wp2_outputs, wp4_outputs):
+    """ wp4_feas is a function which determines the logistic requirement 
+    associated with one logistic phase dealing with the installation of 
+    moorings and foundation systems
+    
+    Parameters
+    ----------
+    log_phase : Class
+     Class of the logistic phase under consideration for assessment
+    log_phase_id : str
+     string describing the ID of the logistic phase under consideration
+    wp2_outputs : dict
+     dictionnary containing all required inputs to WP5 coming from WP2
+    wp4_outputs : DataFrame
+     Panda table containing all required inputs to WP5 coming from WP4
+    
+    Returns
+    -------
+    feas_e : dict
+     dictionnary containing all logistic requirements associated with every
+     equipment type of the logistic phase under consideration
+    feas_v : dict
+     dictionnary containing all logistic requirements associated with every
+     vessel type of the logistic phase under consideration
+    """
+    if log_phase_id == 'F_driven':
+        # Equipment feasiblity
+        # Hammer sleeve diameter
+        diam_u = []  # list of max diameter per unit
+        load_u = []  # list of loading due to the set of foundation(s) per unit
+        area_u = []  # list of loading occupied by the set of foundation(s) per unit
+
+        find_fd_num = 0
+        fundt_num = 0
+        for dev in range(len(wp2_outputs['device [-]'])):
+
+            dev_string = str( wp2_outputs['device [-]'].ix[dev] )
+            num_found = len(wp4_outputs['foundation'])
+            count_fd_num = 0
+            while find_fd_num < num_found:
+
+                if wp4_outputs['foundation']['devices [-]'][find_fd_num]== dev_string:
+                    count_fd_num = count_fd_num + 1
+                    find_fd_num = find_fd_num + 1
+                else:
+                    break
+                found_per_dev = count_fd_num
+
+            diam_u_f = []  # list of diameter of each foundation per unit
+            load_u_f = []  # list of loading due to each foundation per unit
+            area_u_f = []  # list of area occupied by each foundation per unit
+            for ind_found in range(fundt_num, fundt_num+found_per_dev):
+                key1 = "length [m]"
+                key2 = "width [m]"
+                key3 = "dry mass [kg]"
+                load_u_f[len(load_u_f):] = [wp4_outputs['foundation'][key1].ix[ind_found] * wp4_outputs['foundation'][key2].ix[ind_found] / wp4_outputs['foundation'][key3].ix[ind_found]]
+                area_u_f[len(area_u_f):] = [wp4_outputs['foundation'][key1].ix[ind_found] * wp4_outputs['foundation'][key2].ix[ind_found]]
+                diam_u_f[len(diam_u_f):] = [wp4_outputs['foundation'][key1].ix[ind_found]]
+            fundt_num = found_per_dev
+
+            load_u[len(load_u):] = [max(load_u_f)]
+            area_u[len(area_u):] = [sum(area_u_f)]
+            diam_u[len(diam_u):] = [max(diam_u_f)]
+
+        deck_loading = max(load_u)
+        deck_area = max(area_u)
+        sleeve_diam = max(diam_u)
+
+        feas_e = {'Hammer': [['Sleeve diameter [m]', 'sup', sleeve_diam]]}
+        feas_v = {'Crane Barge': [['Deck loading [t/m^2]', 'sup', deck_loading],
+                                  ['Deck space [m^2]', 'sup', deck_area]],
+                  'Crane Vessel': [['Deck loading [t/m^2]', 'sup', deck_loading],
+                                   ['Deck space [m^2]', 'sup', deck_area]],
+                  'JUP Barge': [['Deck loading [t/m^2]', 'sup', deck_loading],
+                                ['Deck space [m^2]', 'sup', deck_area]],
+                  'JUP Vessel': [['Deck loading [t/m^2]', 'sup', deck_loading],
+                                 ['Deck space [m^2]', 'sup', deck_area]]}
+
+    # REPEAT F_driven ?!?!?
+    elif log_phase_id == 'F_suction':
+        pass
+
+    # REPEAT F_driven ?!?!?
+    elif log_phase_id == 'F_gravity':
+        pass
+
+    return feas_e, feas_v

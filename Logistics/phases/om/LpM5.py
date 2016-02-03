@@ -24,16 +24,21 @@ def initialize_LpM5_phase(log_op, vessels, equipments, OM_outputs):
                                    log_op["VessPrep"] ]
 
     # define sea operations
-
-    i = 0 #initialize the number of sea operations within this logistic phase
     for index, row in OM_outputs.iterrows():
 
-        if index == 'MoS7' or index == 'MoS8':
+        om_id = OM_outputs['id [-]'].ix[index]
 
-            phase.op_ve[0].op_seq_sea[i] = [ log_op["Access"],
-                                             log_op["Maintenance"] ]
+        if om_id == 'MoS7' or om_id == 'MoS8':
 
-        i = i+1
+            phase.op_ve[0].op_seq_sea[index] = [ log_op["TransitPortSite"],
+                                                 log_op["VesPos"],
+
+                                                 log_op["Access"],
+                                                 log_op["Maintenance"],
+
+                                                 log_op["TranSiteSite"],
+                                                 log_op["TransitPortSite"] ]
+
 
     # define final demobilization tasks
     phase.op_ve[0].op_seq_demob = [log_op["Demob"]]

@@ -21,24 +21,32 @@ def initialize_LpM1_phase(log_op, vessels, equipments, OM_outputs):
     phase.op_ve[0].ve_combination[1] = {'vessel': [(1, vessels['CTV'])],
                                         'equipment': [] }
 
-    phase.op_ve[0].ve_combination[2] = {'vessel': [(1, vessels['Helicopter'])],
-                                        'equipment': [] }
+    if 'yes' in OM_outputs['helideck [-]'].values:  # include helicopter if helipad is available
+
+        phase.op_ve[0].ve_combination[2] = {'vessel': [(1, vessels['Helicopter'])],
+                                            'equipment': [] }
 
     # define initial mobilization and onshore preparation tasks
     phase.op_ve[0].op_seq_prep = [ log_op["Mob"],
                                    log_op["VessPrep"] ]
 
     # define sea operations
-
-    i = 0 #initialize the number of sea operations within this logistic phase
     for index, row in OM_outputs.iterrows():
 
-        if index == 'Insp1' or index == 'MoS1' or index == 'Insp2' or index == 'MoS2':
+        om_id = OM_outputs['id [-]'].ix[index]
 
-            phase.op_ve[0].op_seq_sea[i] = [ log_op["Access"],
-                                             log_op["Maintenance"] ]
+        if om_id == 'Insp1' or om_id == 'MoS1' or om_id == 'Insp2' or om_id == 'MoS2':
 
-        i = i+1
+            phase.op_ve[0].op_seq_sea[index] = [ log_op["TransitPortSite"],
+                                                 log_op["VesPos"],
+
+                                                 log_op["Access"],
+                                                 log_op["Maintenance"],
+
+                                                 log_op["TranSiteSite"],
+                                                 log_op["TransitPortSite"] ]
+
+
 
     # define final demobilization tasks
     phase.op_ve[0].op_seq_demob = [log_op["Demob"]]

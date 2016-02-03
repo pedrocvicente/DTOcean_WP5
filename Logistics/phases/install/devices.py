@@ -1,3 +1,4 @@
+import warnings
 
 from .classes import DefPhase, LogPhase
 
@@ -48,8 +49,13 @@ def initialize_devices_phase(log_op, vessels, equipments, user_inputs, hydrodyna
         # (2nd branch in the decision making tree)
         if loadout_methd == 'lift away':
             phase.op_ve[0].op_seq_prep.extend([log_op["LoadOut_Lift"]])
+
         elif loadout_methd == 'skidded':
             phase.op_ve[0].op_seq_prep.extend([log_op["LoadOut_Skidded"]])
+
+        else:
+            warnings.warn('Device Loadout Method: Wrong Inputs')
+
     elif trans_methd == 'tow':
         # check the device loadout strategy
         # (2nd branch in the decision making tree)
@@ -62,6 +68,11 @@ def initialize_devices_phase(log_op, vessels, equipments, user_inputs, hydrodyna
         elif loadout_methd == 'float away':
             phase.op_ve[0].op_seq_prep.extend([log_op["LoadOut_Float"]])
 
+        else:
+            warnings.warn('Device Loadout Method: Wrong Inputs')
+
+    else:
+       warnings.warn('Device Transportation Method: Wrong Inputs')
 
     # iterate over the list of elements to be installed.
     # each element is associated with a customized operation sequence depending on it's characteristics,.
@@ -79,7 +90,7 @@ def initialize_devices_phase(log_op, vessels, equipments, user_inputs, hydrodyna
              phase.op_ve[0].op_seq_sea[index].extend([log_op["PosBFdev"]])
 
         else:
-            print 'device: Wrong Inputs'
+           warnings.warn('device type: Wrong Inputs')
 
     # define final demobilization tasks
     phase.op_ve[0].op_seq_demob = [log_op["Demob"]]
@@ -110,6 +121,9 @@ def initialize_devices_phase(log_op, vessels, equipments, user_inputs, hydrodyna
         elif loadout_methd == 'skidded':
             phase.op_ve[1].op_seq_prep.extend([log_op["LoadOut_Skidded"]])
 
+        else:
+            warnings.warn('Device Loadout Method: Wrong Inputs')
+
     elif trans_methd == 'tow':
 
         if loadout_methd == 'lift away':
@@ -121,6 +135,11 @@ def initialize_devices_phase(log_op, vessels, equipments, user_inputs, hydrodyna
         elif loadout_methd == 'float away':
             phase.op_ve[1].op_seq_prep.extend([log_op["LoadOut_Float"]])
 
+        else:
+            warnings.warn('Device Loadout Method: Wrong Inputs')
+
+    else:
+       warnings.warn('Device Transportation Method: Wrong Inputs')
 
     # iterate over the list of elements to be installed.
     # each element is associated with a customized operation sequence depending on it's characteristics,.
@@ -136,7 +155,7 @@ def initialize_devices_phase(log_op, vessels, equipments, user_inputs, hydrodyna
              phase.op_ve[1].op_seq_sea[index].extend([log_op["PosBFdev"]])
 
         else:
-            print 'device: Wrong Inputs'
+           warnings.warn('device type: Wrong Inputs')
 
 
     # define final demobilization tasks

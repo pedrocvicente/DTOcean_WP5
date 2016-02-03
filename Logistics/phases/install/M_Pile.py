@@ -24,9 +24,9 @@ def initialize_m_pile_phase(log_op, vessels, equipments, MF_outputs):
                                         'equipment': [(1, equipments['rov'], 0)]}
 
     # define initial mobilization and onshore preparation tasks
-    phase.op_ve[0].op_seq_prep = [log_op["Mob"],
-                                  log_op["AssPort"],
-                                  log_op["VessPrep"]]
+    phase.op_ve[0].op_seq_prep = [ log_op["Mob"],
+                                   log_op["AssPort"],
+                                   log_op["VessPrep"] ]
 
     # iterate over the list of elements to be installed.
     # each element is associated with a customized operation sequence depending on it's characteristics

@@ -84,5 +84,3 @@ def logPhase_install_init(log_op, vessels, equipments, user_inputs, electrical_o
 
     return logPhase_install
 
-
-

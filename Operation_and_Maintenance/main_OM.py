@@ -100,6 +100,8 @@ from Logistics.selection.select_ve import select_e, select_v
 from Logistics.selection.match import compatibility_ve
 from Logistics.performance.schedule.schedule import sched
 from Logistics.performance.economic.eco import cost
+from Logistics.performance.optim_sol import opt_sol
+
 
 # # Set directory paths for loading inputs
 mod_path = path.dirname(path.realpath(__file__))
@@ -218,3 +220,5 @@ if install['status'] == "pending":
        # cost assessment of the different operation sequenc
        install['cost'], log_phase = cost(install, log_phase)
 
+       # decide
+       install['solution'], log_phase = opt_sol(install, log_phase)

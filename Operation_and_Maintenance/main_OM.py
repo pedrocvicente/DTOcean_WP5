@@ -95,7 +95,7 @@ from Logistics.load.wp_bom import load_OM_outputs
 from Logistics.phases.operations import logOp_init
 from Logistics.phases.om import logPhase_om_init
 from Logistics.installation import select_port_OM
-from Logistics.installation import logPhase_select
+from Logistics.maintenance.select_logPhase import logPhase_select
 from Logistics.feasibility.glob import glob_feas
 from Logistics.selection.select_ve import select_e, select_v
 from Logistics.selection.match import compatibility_ve
@@ -180,9 +180,22 @@ install_port = select_port_OM.OM_port(hydrodynamic_outputs, OM_outputs_PORT, por
 
 logPhase_om = logPhase_om_init(logOp, vessels, equipments, user_inputs, OM_outputs)
 
-log_phase_id = logPhase_select
+# Select the suitable Log phase id
+log_phase_id = logPhase_select(OM_outputs)
 
-log_phase = logPhase_om[log_phase_id]  # ?!
+log_phase = logPhase_om[log_phase_id]
+
+# Incremental assessment of all logistic phase forming the the om process
+om = {'port': install_port,
+      'requirement': {},
+      'eq_select': {},
+      've_select': {},
+      'combi_select': {},
+      'schedule': {},
+      'cost': {},
+      'risk': {},
+      'envir': {}
+      }
 
 # characterize the logistic requirements
 om['requirement'] = glob_feas(log_phase, log_phase_id, user_inputs,
@@ -195,7 +208,7 @@ om['ve_select'], log_phase = select_v(om, log_phase)
 
 # matching requirements for combinations of port/vessel(s)/equipment
 om['combi_select'], log_phase = compatibility_ve(om, log_phase,
-                                                 om['Selected base port for installation'])
+                                                 om['port'])
 
 # schedule assessment of the different operation sequence
 om['schedule'], log_phase = sched(x, install, log_phase, log_phase_id, user_inputs,

@@ -217,3 +217,4 @@ if install['status'] == "pending":
 
        # cost assessment of the different operation sequenc
        install['cost'], log_phase = cost(install, log_phase)
+

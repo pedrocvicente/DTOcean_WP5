@@ -76,6 +76,7 @@ def OM_port(hydrodynamic_outputs, OM_outputs, port_data):
     if OM_outputs['ID [-]'].ix[0] == 'INS_PORT':
 
         print 'Inspection only, will use the closest port'
+        port['Port list satisfying the minimum requirements'] = port_data
 
     elif OM_outputs['ID [-]'].ix[0] == 'OM_PORT':
 

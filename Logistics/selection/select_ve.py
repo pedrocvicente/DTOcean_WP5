@@ -164,8 +164,8 @@ def select_v (install, log_phase):
                                  feas_v_pd = feas_v_pd.append( v_pd[v_pd[v_para].isnull()] ) # append all the vessels with empty fields
 
                            elif v_meth == 'equal':
-                                 feas_v_pd = v_pd[v_pd[v_para] <= v_val]
                                  feas_v_pd = v_pd[v_pd[v_para] == v_val]
+                                 feas_v_pd = feas_v_pd.append( v_pd[v_pd[v_para].isnull()] ) # append all the vessels with empty fields
 
                        # Check if no vessel is feasible within the req for this particular ve_combination
                        if len(v_pd.index)==0:

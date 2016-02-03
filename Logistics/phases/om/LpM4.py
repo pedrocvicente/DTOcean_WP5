@@ -28,18 +28,19 @@ def initialize_LpM4_phase(log_op, vessels, equipments, OM_outputs):
     # define sea operations
     for index, row in OM_outputs.iterrows():
 
-        om_id = OM_outputs['id [-]'].ix[index]
+        om_id = OM_outputs['ID [-]'].ix[index]
 
         if om_id == 'MoS5' or om_id == 'MoS6':
 
-            phase.op_ve[0].op_seq_sea[index] = [ log_op["TransitPortSite"],
+            phase.op_ve[0].op_seq_sea[index] = [ log_op["TranPortSite"],
                                                  log_op["VesPos"],
 
                                                  log_op["Access"],
                                                  log_op["Maintenance"],
 
                                                  log_op["TranSiteSite"],
-                                                 log_op["TransitPortSite"] ]
+                                                 log_op["TranSitePort"] ]
+
 
     # define final demobilization tasks
     phase.op_ve[0].op_seq_demob = [log_op["Demob"]]

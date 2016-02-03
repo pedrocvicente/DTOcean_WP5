@@ -1,6 +1,6 @@
 """
 @author: WavEC Offshore Renewables
-email: boris.teillant@wavec.org; paulo@wavec.org
+email: boris.teillant@wavec.org; paulo@wavec.org, pedro.vicente@wavec.org
 
 main.py is the main file of the WP5 module within the suite of design tools
 developped under the EU FP7 DTOcean project. main.py provides an estimation of
@@ -95,6 +95,7 @@ from Logistics.load.wp_bom import load_OM_outputs
 from Logistics.phases.operations import logOp_init
 from Logistics.phases.om import logPhase_om_init
 from Logistics.installation import select_port_OM
+from Logistics.installation import logPhase_select
 from Logistics.feasibility.glob import glob_feas
 from Logistics.selection.select_ve import select_e, select_v
 from Logistics.selection.match import compatibility_ve
@@ -118,8 +119,8 @@ Load required inputs and database into panda dataframes
 
 import pickle
 
-# inputs_SV_LD = 'save'
-inputs_SV_LD = 'load'
+inputs_SV_LD = 'save'
+#inputs_SV_LD = 'load'
 
 if inputs_SV_LD == "save":
     # Saving the objects:
@@ -158,12 +159,7 @@ else:
  Initialise logistic operations and logistic phases
 """
 
-# logOp = logOp_init()
-
-logOp = logOp_init(database_file("operations_time_OLC.xlsx"))
-
-
-
+logOp = logOp_init( database_file("operations_time_OLC.xlsx") )
 
 """
 Select the most appropriate base port for OM
@@ -182,38 +178,28 @@ OM_port function selects the port used by OM logistic phases
 
 install_port = select_port_OM.OM_port(hydrodynamic_outputs, OM_outputs_PORT, ports)  # JUST FOR TESTING!!!
 
-
-
-
-
 logPhase_om = logPhase_om_init(logOp, vessels, equipments, user_inputs, OM_outputs)
 
-if install['status'] == "pending":
-    for index_op, row in OM_outputs.iterrows():
-       log_phase_id = OM_outputs['ID [-]'].ix[index_op]
-       log_phase = logPhase_om[log_phase_id]  # ?!
+log_phase_id = logPhase_select
 
-       # characterize the logistic requirements
-       install['requirement'] = glob_feas(log_phase, log_phase_id,
-                                          user_inputs,
-                                          hydrodynamic_outputs,
-                                          electrical_outputs, MF_outputs)
+log_phase = logPhase_om[log_phase_id]  # ?!
 
-       # selection of the maritime infrastructure
-       install['eq_select'], log_phase = select_e(install, log_phase)
-       install['ve_select'], log_phase = select_v(install, log_phase)
+# characterize the logistic requirements
+om['requirement'] = glob_feas(log_phase, log_phase_id, user_inputs,
+                              hydrodynamic_outputs, electrical_outputs,
+                              MF_outputs, OM_outputs)
 
-       # matching requirements for combinations of port/vessel(s)/equipment
-       install['combi_select'], log_phase = compatibility_ve(install,
-                                                             log_phase,
-                                                             install_port['Selected base port for installation'])
+# selection of the maritime infrastructure
+om['eq_select'], log_phase = select_e(om, log_phase)
+om['ve_select'], log_phase = select_v(om, log_phase)
 
-       # schedule assessment of the different operation sequence
-       install['schedule'], log_phase = sched(x, install, log_phase,
-                                              log_phase_id, user_inputs,
-                                              hydrodynamic_outputs,
-                                              electrical_outputs,
-                                              MF_outputs)
+# matching requirements for combinations of port/vessel(s)/equipment
+om['combi_select'], log_phase = compatibility_ve(om, log_phase,
+                                                 om['Selected base port for installation'])
 
-       # cost assessment of the different operation sequenc
-       install['cost'], log_phase = cost(install, log_phase)
+# schedule assessment of the different operation sequence
+om['schedule'], log_phase = sched(x, install, log_phase, log_phase_id, user_inputs,
+                                  hydrodynamic_outputs, electrical_outputs, MF_outputs)
+
+# cost assessment of the different operation sequence
+om['cost'], log_phase = cost(om, log_phase)

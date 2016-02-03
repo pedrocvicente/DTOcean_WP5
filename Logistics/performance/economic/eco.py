@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 @author: WavEC Offshore Renewables
-email: boris.teillant@wavec.org; paulo@wavec.org
+email: boris.teillant@wavec.org; paulo@wavec.org, pedro.vicente@wavec.org
 
 This module is responsible for the cost step in the WP5 methodology. It contains
 functions to calculate the cost of each solution based on the schedule, day rates
@@ -88,7 +88,11 @@ def cost(install, log_phase):
             vessel_total_cost = sum(vessel_cost)
             port_total_cost = 0  # to be improved !!!!!!!! port_total_cost = install_port['Selected base port for installation']['Tonnage charges [euro/GT]']
 
-            log_phase.op_ve[seq].sol_cost[ind_sol] = {'vessel cost': vessel_total_cost, 'equipment cost': equip_total_cost, 'port cost': port_total_cost}
-            sol[seq] = log_phase.op_ve[seq].sol_cost
+            log_phase.op_ve[seq].sol_cost[ind_sol] = {'vessel cost': vessel_total_cost, 'equipment cost': equip_total_cost, 'port cost': port_total_cost,
+                                                      'total cost': vessel_total_cost + equip_total_cost + port_total_cost}
+
+        sol[seq] = log_phase.op_ve[seq].sol_cost
+
+
 
     return sol, log_phase

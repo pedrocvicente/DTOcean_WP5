@@ -112,51 +112,31 @@ def database_file(file):
     db_path = path.join(mod_path, fpath)
     return db_path
 
-#def run():
 """
 Load required inputs and database into panda dataframes
 """
 
-import pickle
+#default_values inputs
+phase_order = load_phase_order_data(database_file("Installation_Order.xlsx"))
+schedule_OLC = load_time_olc_data(database_file("operations_time_OLC.xlsx"))
+penet_rates, laying_rates = load_eq_rates(database_file("equipment_perf_rates.xlsx"))
+port_sf, vessel_sf, eq_sf = load_sf(database_file("safety_factors.xlsx"))
 
-inputs_SV_LD = 'save'
-#inputs_SV_LD = 'load'
+#Internal logistic module databases
+vessels = load_vessel_data(database_file("logisticsDB_vessel_python.xlsx"))
+equipments = load_equipment_data(database_file("logisticsDB_equipment_python.xlsx"))
+ports = load_port_data(database_file("logisticsDB_ports_python.xlsx"))
 
-if inputs_SV_LD == "save":
-    # Saving the objects:
-
-    #default_values inputs
-    phase_order = load_phase_order_data(database_file("Installation_Order.xlsx"))
-    schedule_OLC = load_time_olc_data(database_file("operations_time_OLC.xlsx"))
-    penet_rates, laying_rates = load_eq_rates(database_file("equipment_perf_rates.xlsx"))
-    port_sf, vessel_sf, eq_sf = load_sf(database_file("safety_factors.xlsx"))
-
-    #Internal logistic module databases
-    vessels = load_vessel_data(database_file("logisticsDB_vessel_python.xlsx"))
-    equipments = load_equipment_data(database_file("logisticsDB_equipment_python.xlsx"))
-    ports = load_port_data(database_file("logisticsDB_ports_python.xlsx"))
-
-    #upstream module inputs/outputs
-    user_inputs = load_user_inputs(database_file("inputs_user.xlsx"))
-    hydrodynamic_outputs = load_hydrodynamic_outputs(database_file("ouputs_hydrodynamic.xlsx"))
-    electrical_outputs = load_electrical_outputs(database_file("ouputs_electrical.xlsx"))
-    MF_outputs = load_MF_outputs(database_file("outputs_MF.xlsx"))
-    OM_outputs = load_OM_outputs(database_file("outputs_OM.xlsx"))
-    OM_outputs_PORT = load_OM_outputs(database_file("outputs_OM_INS_PORT.xlsx"))
-
-    with open('objs.pickle', 'w') as f:
-        pickle.dump([phase_order, schedule_OLC, vessels, equipments, ports, user_inputs, hydrodynamic_outputs, electrical_outputs, MF_outputs, OM_outputs, OM_outputs_PORT], f)
-
-elif inputs_SV_LD == "load":
-    # Getting back the objects:
-    with open('objs.pickle') as f:
-        phase_order, schedule_OLC, vessels, equipments, ports, user_inputs, hydrodynamic_outputs, electrical_outputs, MF_outputs, OM_outputs, OM_outputs_PORT = pickle.load(f)
-
-else:
-    print 'Invalid SaveLoad option'
+#upstream module inputs/outputs
+user_inputs = load_user_inputs(database_file("inputs_user.xlsx"))
+hydrodynamic_outputs = load_hydrodynamic_outputs(database_file("ouputs_hydrodynamic.xlsx"))
+electrical_outputs = load_electrical_outputs(database_file("ouputs_electrical.xlsx"))
+MF_outputs = load_MF_outputs(database_file("outputs_MF.xlsx"))
+OM_outputs = load_OM_outputs(database_file("outputs_OM.xlsx"))
+OM_outputs_PORT = load_OM_outputs(database_file("outputs_OM_INS_PORT.xlsx"))
 
 """
- Initialise logistic operations and logistic phases
+ Initialise logistic operations and logistic phase
 """
 
 logOp = logOp_init( database_file("operations_time_OLC.xlsx") )
@@ -185,6 +165,10 @@ log_phase_id = logPhase_select(OM_outputs)
 
 log_phase = logPhase_om[log_phase_id]
 
+"""
+ Perform the logistic module computation for the selected logistic phase
+"""
+
 # Incremental assessment of all logistic phase forming the the om process
 om = {'port': install_port,
       'requirement': {},
@@ -207,8 +191,7 @@ om['eq_select'], log_phase = select_e(om, log_phase)
 om['ve_select'], log_phase = select_v(om, log_phase)
 
 # matching requirements for combinations of port/vessel(s)/equipment
-om['combi_select'], log_phase = compatibility_ve(om, log_phase,
-                                                 om['port'])
+om['combi_select'], log_phase = compatibility_ve(om, log_phase, om['port'])
 
 # schedule assessment of the different operation sequence
 om['schedule'], log_phase = sched(x, install, log_phase, log_phase_id, user_inputs,

@@ -12,7 +12,7 @@ BETA VERSION NOTES: The current version is limited to one logistic phase, the
 repair action related to offshore inspection and maintenance activities.
 """
 
-def om_feas(log_phase, log_phase_id, OM_outputs, user_inputss):
+def om_feas(log_phase, log_phase_id, OM_outputs, user_inputs):
     """ om_feas is a function which determines the logistic requirement
     associated with the logistic phases related to the O&M
 
@@ -152,7 +152,7 @@ def om_feas(log_phase, log_phase_id, OM_outputs, user_inputss):
 
 
         feas_e = {'rov': [ ['Depth rating [m]', 'sup', bathymetry],
-                          ['ROV class [-]', 'equal', rov_class] ]
+                           ['ROV class [-]', 'equal', rov_class] ]
                          }
 
         feas_v = {'CTV':        [ ['Deck loading [t/m^2]', 'sup', deck_loading],
@@ -163,16 +163,24 @@ def om_feas(log_phase, log_phase_id, OM_outputs, user_inputss):
                   'Multicat':   [ ['Deck loading [t/m^2]', 'sup', deck_loading],
                                   ['Deck space [m^2]', 'sup', deck_area],
                                   ['Max. cargo [t]', 'sup', deck_cargo],
-                                  ['External  personnel [-]', 'sup', ext_personnel] ]
+                                  ['External  personnel [-]', 'sup', ext_personnel] ],
 
+                 'CSV':         [ ['Deck loading [t/m^2]', 'sup', deck_loading],
+                                  ['Deck space [m^2]', 'sup', deck_area],
+                                  ['Max. cargo [t]', 'sup', deck_cargo],
+                                  ['External  personnel [-]', 'sup', ext_personnel] ]
                                  }
 
         # Matching
-        feas_m_pv = {'CTV': [ ['Beam [m]', 'sup', 'Entrance width [m]'],
-                              ['Length [m]', 'sup', 'Terminal length [m]'],
-                              ['Max. draft [m]', 'sup', 'Terminal draught [m]'] ],
+        feas_m_pv = {'CTV':      [ ['Beam [m]', 'sup', 'Entrance width [m]'],
+                                   ['Length [m]', 'sup', 'Terminal length [m]'],
+                                   ['Max. draft [m]', 'sup', 'Terminal draught [m]'] ],
 
                      'Multicat': [ ['Beam [m]', 'sup', 'Entrance width [m]'],
+                                   ['Length [m]', 'sup', 'Terminal length [m]'],
+                                   ['Max. draft [m]', 'sup', 'Terminal draught [m]'] ],
+
+                     'CSV':      [ ['Beam [m]', 'sup', 'Entrance width [m]'],
                                    ['Length [m]', 'sup', 'Terminal length [m]'],
                                    ['Max. draft [m]', 'sup', 'Terminal draught [m]'] ]
                         }
@@ -260,6 +268,138 @@ def om_feas(log_phase, log_phase_id, OM_outputs, user_inputss):
 
                         }
 
+        feas_m_pe = {}
+
+        feas_m_ve = {}
+
+    if log_phase_id == 'LpM6':
+
+        # Input collection
+        lenght_SP = OM_outputs['sp_length [m]']
+        width_SP = OM_outputs['sp_width [m]']
+        dry_mass_SP = OM_outputs['sp_dry_mass [kg]']/1000
+        nr_technician = OM_outputs['technician [-]']
+        depth = OM_outputs['depth [m]']
+
+        # Feasibility functions
+        deck_area = max(lenght_SP*width_SP)
+        deck_cargo = max(dry_mass_SP)
+        deck_loading = max(dry_mass_SP/(lenght_SP*width_SP))
+        ext_personnel = max(nr_technician)
+        bathymetry = max(depth)
+        rov_class = 'Workclass'
+
+        feas_e = {'rov': [ ['Depth rating [m]', 'sup', bathymetry],
+                           ['ROV class [-]', 'equal', rov_class] ]
+                         }
+
+        feas_v = {'Crane Vessel': [ ['Deck loading [t/m^2]', 'sup', deck_loading],
+                                    ['Deck space [m^2]', 'sup', deck_area],
+                                    ['Max. cargo [t]', 'sup', deck_cargo],
+                                    ['Crane capacity [t]', 'sup', deck_cargo],
+                                    ['External  personnel [-]', 'sup', ext_personnel] ],
+
+                  'JUP Vessel':   [ ['Deck loading [t/m^2]', 'sup', deck_loading],
+                                    ['Deck space [m^2]', 'sup', deck_area],
+                                    ['Max. cargo [t]', 'sup', deck_cargo],
+                                    ['Crane capacity [t]', 'sup', deck_cargo],
+                                    ['External  personnel [-]', 'sup', ext_personnel] ],
+
+                 'CSV':           [ ['Deck loading [t/m^2]', 'sup', deck_loading],
+                                    ['Deck space [m^2]', 'sup', deck_area],
+                                    ['Max. cargo [t]', 'sup', deck_cargo],
+                                    ['Crane capacity [t]', 'sup', deck_cargo],
+                                    ['External  personnel [-]', 'sup', ext_personnel] ],
+
+                 'Crane Barge':   [ ['Deck loading [t/m^2]', 'sup', deck_loading],
+                                    ['Deck space [m^2]', 'sup', deck_area],
+                                    ['Max. cargo [t]', 'sup', deck_cargo],
+                                    ['Crane capacity [t]', 'sup', deck_cargo],
+                                    ['External  personnel [-]', 'sup', ext_personnel] ],
+
+                 'JUP Barge':     [ ['Deck loading [t/m^2]', 'sup', deck_loading],
+                                    ['Deck space [m^2]', 'sup', deck_area],
+                                    ['Max. cargo [t]', 'sup', deck_cargo],
+                                    ['Crane capacity [t]', 'sup', deck_cargo],
+                                    ['External  personnel [-]', 'sup', ext_personnel] ],
+
+                 'Multicat':      [ ['Deck loading [t/m^2]', 'sup', deck_loading],
+                                    ['Deck space [m^2]', 'sup', deck_area],
+                                    ['Max. cargo [t]', 'sup', deck_cargo],
+                                    ['Crane capacity [t]', 'sup', deck_cargo],
+                                    ['External  personnel [-]', 'sup', ext_personnel] ]
+                                }
+
+        # Matching
+        feas_m_pv = {'CTV':          [ ['Beam [m]', 'sup', 'Entrance width [m]'],
+                                       ['Length [m]', 'sup', 'Terminal length [m]'],
+                                       ['Max. draft [m]', 'sup', 'Terminal draught [m]'] ],
+
+                     'Crane Vessel': [ ['Beam [m]', 'sup', 'Entrance width [m]'],
+                                       ['Length [m]', 'sup', 'Terminal length [m]'],
+                                       ['Max. draft [m]', 'sup', 'Terminal draught [m]'] ],
+
+                     'JUP Vessel':   [ ['Beam [m]', 'sup', 'Entrance width [m]'],
+                                       ['Length [m]', 'sup', 'Terminal length [m]'],
+                                       ['Max. draft [m]', 'sup', 'Terminal draught [m]'] ],
+
+                     'CSV':          [ ['Beam [m]', 'sup', 'Entrance width [m]'],
+                                       ['Length [m]', 'sup', 'Terminal length [m]'],
+                                       ['Max. draft [m]', 'sup', 'Terminal draught [m]'] ],
+
+                     'Crane Barge':  [ ['Beam [m]', 'sup', 'Entrance width [m]'],
+                                       ['Length [m]', 'sup', 'Terminal length [m]'],
+                                       ['Max. draft [m]', 'sup', 'Terminal draught [m]'] ],
+
+                     'JUP Barge':    [ ['Beam [m]', 'sup', 'Entrance width [m]'],
+                                       ['Length [m]', 'sup', 'Terminal length [m]'],
+                                       ['Max. draft [m]', 'sup', 'Terminal draught [m]'] ],
+
+                    'Multicat':      [ ['Beam [m]', 'sup', 'Entrance width [m]'],
+                                       ['Length [m]', 'sup', 'Terminal length [m]'],
+                                       ['Max. draft [m]', 'sup', 'Terminal draught [m]'] ]
+                                }
+        feas_m_pe = {}
+
+        feas_m_ve = {}
+
+    if log_phase_id == 'LpM7':
+
+        # Input collection
+        lenght_SP = OM_outputs['sp_length [m]']
+        width_SP = OM_outputs['sp_width [m]']
+        dry_mass_SP = OM_outputs['sp_dry_mass [kg]']/1000
+        nr_technician = OM_outputs['technician [-]']
+        depth = OM_outputs['depth [m]']
+
+        # Feasibility functions
+        BollardPull = max(dry_mass_SP)
+        ext_personnel = max(nr_technician)
+        bathymetry = max(depth)
+        rov_class = 'Workclass'
+
+        feas_e = {'rov': [ ['Depth rating [m]', 'sup', bathymetry],
+                           ['ROV class [-]', 'equal', rov_class] ]
+                         }
+
+        feas_v = {'Multicat': [ ['Bollard pull [t]', 'sup', deck_cargo],
+                                ['External  personnel [-]', 'sup', ext_personnel] ],
+
+                  'AHTS':     [ ['Bollard pull [t]', 'sup', deck_cargo],
+                                ['External  personnel [-]', 'sup', ext_personnel] ]
+
+                                }
+
+        # Matching
+        feas_m_pv = {'Multicat':     [ ['Beam [m]', 'sup', 'Entrance width [m]'],
+                                       ['Length [m]', 'sup', 'Terminal length [m]'],
+                                       ['Max. draft [m]', 'sup', 'Terminal draught [m]'] ],
+
+                     'AHTS Vessel':  [ ['Beam [m]', 'sup', 'Entrance width [m]'],
+                                       ['Length [m]', 'sup', 'Terminal length [m]'],
+                                       ['Max. draft [m]', 'sup', 'Terminal draught [m]'] ]
+
+                                }
         feas_m_pe = {}
 
         feas_m_ve = {}

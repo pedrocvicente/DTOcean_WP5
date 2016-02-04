@@ -21,6 +21,8 @@ def initialize_LpM3_phase(log_op, vessels, equipments, OM_outputs):
     phase.op_ve[0].ve_combination[1] = {'vessel': [(1, vessels['CTV'])],
                                         'equipment': [ (1, equipments['rov'], 0) ] }
 
+    phase.op_ve[0].ve_combination[2] = {'vessel': [(1, vessels['CSV'])],
+                                        'equipment': [ (1, equipments['rov'], 0) ] }
 
     # define initial mobilization and onshore preparation tasks
     phase.op_ve[0].op_seq_prep = [ log_op["Mob"],

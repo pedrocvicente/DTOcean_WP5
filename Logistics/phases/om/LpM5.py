@@ -7,12 +7,12 @@ def initialize_LpM5_phase(log_op, vessels, equipments, OM_outputs):
 
 
     # initialize logistic phase
-    phase = LogPhase(920, "Underwater inspection or on-site maintenance using ROV")
+    phase = LogPhase(920, "On-site maintenance on power cables")
 
-    ''' Underwater inspection or on-site maintenance strategy using ROVs '''
+    ''' On-site maintenance on power cables strategy '''
 
     # initialize strategy
-    phase.op_ve[0] = DefPhase(1, 'Inspection / On-site maintenance using ROV')
+    phase.op_ve[0] = DefPhase(1, 'On-site maintenance on power cables')
 
     # define vessel and equipment combinations suited for this strategy
     phase.op_ve[0].ve_combination[0] = {'vessel': [(1, vessels['CLV'])],

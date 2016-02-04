@@ -99,6 +99,7 @@ from Logistics.maintenance.select_logPhase import logPhase_select
 from Logistics.feasibility.glob import glob_feas
 from Logistics.selection.select_ve import select_e, select_v
 from Logistics.selection.match import compatibility_ve
+from Logistics.performance.optim_sol import opt_sol
 from Logistics.performance.schedule.schedule import sched
 from Logistics.performance.economic.eco import cost
 
@@ -156,7 +157,7 @@ OM_port function selects the port used by OM logistic phases
     This should be called the first time the logistic module is called.
 """
 
-install_port = select_port_OM.OM_port(hydrodynamic_outputs, OM_outputs_PORT, ports)  # JUST FOR TESTING!!!
+om_port = select_port_OM.OM_port(hydrodynamic_outputs, OM_outputs_PORT, ports)  # JUST FOR TESTING!!!
 
 logPhase_om = logPhase_om_init(logOp, vessels, equipments, user_inputs, OM_outputs)
 
@@ -170,13 +171,14 @@ log_phase = logPhase_om[log_phase_id]
 """
 
 # Incremental assessment of all logistic phase forming the the om process
-om = {'port': install_port,
+om = {'port': om_port,
       'requirement': {},
       'eq_select': {},
       've_select': {},
       'combi_select': {},
       'schedule': {},
       'cost': {},
+      'optimal': {},
       'risk': {},
       'envir': {}
       }
@@ -191,11 +193,13 @@ om['eq_select'], log_phase = select_e(om, log_phase)
 om['ve_select'], log_phase = select_v(om, log_phase)
 
 # matching requirements for combinations of port/vessel(s)/equipment
-om['combi_select'], log_phase = compatibility_ve(om, log_phase, om['port'])
+om['combi_select'], log_phase = compatibility_ve(om, log_phase, om_port['Selected base port for installation'])
 
 # schedule assessment of the different operation sequence
-om['schedule'], log_phase = sched(x, install, log_phase, log_phase_id, user_inputs,
-                                  hydrodynamic_outputs, electrical_outputs, MF_outputs)
+#om['schedule'], log_phase = sched(x, install, log_phase, log_phase_id, user_inputs,
+#                                  hydrodynamic_outputs, electrical_outputs, MF_outputs)
 
 # cost assessment of the different operation sequence
 om['cost'], log_phase = cost(om, log_phase)
+
+om['optimal'] = opt_sol(log_phase)

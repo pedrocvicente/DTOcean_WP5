@@ -7,7 +7,7 @@ email: boris.teillant@wavec.org; paulo@wavec.org, pedro.vicente@wavec.org
 """
 import numpy
 
-def opt_sol(install, log_phase):
+def opt_sol(log_phase):
 
     # loop over the number of operation sequencing options
     sol_index_inseq_vec=[]
@@ -23,9 +23,7 @@ def opt_sol(install, log_phase):
             if min_total_cost == total_cost:
                 sol_index_inseq = [total_cost, ind_sol, seq]
 
-
         sol_index_inseq_vec.append(sol_index_inseq)
-
 
     min_sol_cost_sorted = sorted(sol_index_inseq_vec)
 
@@ -34,9 +32,8 @@ def opt_sol(install, log_phase):
     min_cost_final_sol = min_sol_cost_sorted[0][0]
 
     solution = log_phase.op_ve[seq_final_sol].sol[sol_nr_final_sol]
-    log_phase
 
+    sol = {'total cost': min_cost_final_sol,
+           'vessel_equipment': solution}
 
-    sol = {min_cost_final_sol, solution}
-
-    return sol, log_phase
+    return sol

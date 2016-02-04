@@ -31,7 +31,7 @@ def initialize_LpM3_phase(log_op, vessels, equipments, OM_outputs):
 
         om_id = OM_outputs['ID [-]'].ix[index]
 
-        if om_id == 'Insp4' or om_id == 'Insp4' or om_id == 'MoS3':
+        if om_id == 'Insp4' or om_id == 'Insp5' or om_id == 'MoS3':
 
             phase.op_ve[0].op_seq_sea[index] = [ log_op["TranPortSite"],
                                                  log_op["VesPos"],

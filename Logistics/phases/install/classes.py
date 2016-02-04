@@ -24,11 +24,12 @@ class DefPhase(object):
         self.description = description
         self.op_seq_prep = [] # includes all individual logistic operations
         # before going to sea
-        self.op_seq_sea = {} # 
+        self.op_seq_sea = {} #
         self.op_seq_demob = [] #
 #        self.op_sequence = {}
         self.ve_combination = {}
         self.sol = {}
+        self.sol_cost = {}
         # self.sol_combi = {}
 #        self.sol_combi_combinations = {}
 #        self.sol_combi_ves = {}

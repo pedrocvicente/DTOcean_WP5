@@ -53,8 +53,9 @@ def select_e (install, log_phase):
                 nr_eq = 0
                 while nr_eq < LEN_nr_eq:
 
-                    e_key_phase = log_phase.op_ve[seq].ve_combination[combi]['equipment'][nr_eq][1].id
-                    e_pd = log_phase.op_ve[seq].ve_combination[combi]['equipment'][nr_eq][1].panda
+                    e_key_phase = log_phase.op_ve[seq].ve_combination[combi]['equipment'][nr_eq][1].id  # save equipment type
+                    e_pd = log_phase.op_ve[seq].ve_combination[combi]['equipment'][nr_eq][1].panda   # save the full equipment type dataframe
+                    feas_e_pd = e_pd # All equipments are considered for feasibility evaluation
 
                     if e_key_phase == e_key_req:
 
@@ -64,15 +65,15 @@ def select_e (install, log_phase):
                             e_val = req_e[e_key_req][req][2]
 
                             if e_meth == 'sup':
-                                feas_e_pd = e_pd[e_pd[e_para] >= e_val]
+                                feas_e_pd = feas_e_pd[feas_e_pd[e_para] >= e_val]
                                 feas_e_pd = feas_e_pd.append( e_pd[e_pd[e_para].isnull()] ) # append all the vessels with empty fields
 
                             elif e_meth == 'inf':
-                                  feas_e_pd = e_pd[e_pd[e_para] <= e_val]
+                                  feas_e_pd = feas_e_pd[feas_e_pd[e_para] <= e_val]
                                   feas_e_pd = feas_e_pd.append( e_pd[e_pd[e_para].isnull()] ) # append all the vessels with empty fields
 
                             elif e_meth == 'equal':
-                                  feas_e_pd = e_pd[e_pd[e_para] == e_val]
+                                  feas_e_pd = feas_e_pd[feas_e_pd[e_para] == e_val]
                                   feas_e_pd = feas_e_pd.append( e_pd[e_pd[e_para].isnull()] ) # append all the vessels with empty fields
 
 
@@ -145,8 +146,9 @@ def select_v (install, log_phase):
                 nr_ves = 0
                 while nr_ves < LEN_nr_ves: # loop over the number of vessels inside the combination
 
-                    v_key_phase = log_phase.op_ve[seq].ve_combination[combi]['vessel'][nr_ves][1].id
-                    v_pd = log_phase.op_ve[seq].ve_combination[combi]['vessel'][nr_ves][1].panda
+                    v_key_phase = log_phase.op_ve[seq].ve_combination[combi]['vessel'][nr_ves][1].id # save vessel type
+                    v_pd = log_phase.op_ve[seq].ve_combination[combi]['vessel'][nr_ves][1].panda  # save the full vessel dataframe
+                    feas_v_pd = v_pd # All vessel are considered for feasibility evaluation
 
                     if v_key_phase == v_key_req:
 
@@ -156,15 +158,15 @@ def select_v (install, log_phase):
                            v_val = req_v[v_key_req][req][2]
 
                            if v_meth == 'sup':
-                               feas_v_pd = v_pd[v_pd[v_para] >= v_val]
+                               feas_v_pd = feas_v_pd[feas_v_pd[v_para] >= v_val]
                                feas_v_pd = feas_v_pd.append( v_pd[v_pd[v_para].isnull()] ) # append all the vessels with empty fields
 
                            elif v_meth == 'inf':
-                                 feas_v_pd = v_pd[v_pd[v_para] <= v_val]
+                                 feas_v_pd = feas_v_pd[feas_v_pd[v_para] <= v_val]
                                  feas_v_pd = feas_v_pd.append( v_pd[v_pd[v_para].isnull()] ) # append all the vessels with empty fields
 
                            elif v_meth == 'equal':
-                                 feas_v_pd = v_pd[v_pd[v_para] == v_val]
+                                 feas_v_pd = feas_v_pd[feas_v_pd[v_para] == v_val]
                                  feas_v_pd = feas_v_pd.append( v_pd[v_pd[v_para].isnull()] ) # append all the vessels with empty fields
 
                        # Check if no vessel is feasible within the req for this particular ve_combination
